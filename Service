@@ -1,0 +1,62 @@
+DockerCompose
+
+In a distributed application, different pieces of the app are called Services
+Services as really just Containers in production.
+A service only runs one image but it codifies the way that image run
+define, run, scale with docker-compose.yml
+Example:
+      version: "3"
+      services:
+        web:
+          # replace username/repo:tag with your name and image details
+          image: username/repo:tag
+          deploy:
+            replicas: 5
+            resources:
+              limits:
+                cpus: "0.1"
+                memory: 50M
+            restart_policy:
+              condition: on-failure
+          ports:
+            - "4000:80"
+          networks:
+            - webnet
+      networks:
+        webnet:
+        
+docker-compose.yml tells Docker to:
+    Pull the image
+    run 5 instance of that image as a sevice 
+    limiting each one to use: 10% single core of CPU time and 50M RAM
+    immediately restart containers of one fails
+    Map port 4000 on the host to web's port 80
+    Intruct web's container to share port 80 via a load-balanced network call webnet
+    Degine webnet network with default setting 
+
+Run your new load-balanced app
+
+Before we use the docker stack deply command we first run
+
+docker swarm init ( if don't, error "this node is not a swarm manager")
+Run:
+    docker stack deploy -c docker-compose.yml <app-name>
+    docker stack deploy -c docker-compose.yml getstartedlab
+    
+    docker stack services <app-name>
+    docker service ps getstartlab_web
+    
+    docker container ls -q
+    
+    docker stack ps
+    
+    
+    
+
+
+
+
+
+
+
+
